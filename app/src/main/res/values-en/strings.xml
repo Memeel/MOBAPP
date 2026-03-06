@@ -1,0 +1,44 @@
+<resources>
+    <string name="app_name">MyFirstApplication</string>
+
+    <string name="label_nom">Last Name: </string>
+    <string name="label_prenom">First Name: </string>
+    <string name="label_date_naissance">Date of Birth: </string>
+    <string name="label_ville_naissance">Place of Birth: </string>
+    <string name="label_phone">Phone Number: </string>
+    <string name="label_dep">Department of Birth</string>
+
+    <string name="hint_nom">Enter your last name</string>
+    <string name="hint_prenom">Enter your first name</string>
+    <string name="hint_date_naissance">Enter your date of birth</string>
+    <string name="hint_ville_naissance">Enter your place of birth</string>
+    <string name="hint_phone">Enter a phone number</string>
+
+    <string name="btn_valider">Submit</string>
+    <string name="btn_abandon">Cancel</string>
+
+    <string name="reset_action">Clear All</string>
+
+    <string name="department">Select a department</string>
+
+    <string name="error">Incomplete input</string>
+    <string name="error_phone">This phone number already exists</string>
+    <string name="error_department">Please select a valid department</string>
+
+    <string name="delete_success">Phone number deleted successfully!</string>
+    <string name="phone_added">Number of phone numbers added: </string>
+    <string name="close">Close</string>
+    <string name="delete">Delete</string>
+
+    <string name="wiki">Open Wikipedia</string>
+    <string name="errorVille">No city entered</string>
+    <string name="errorAction">No component found to perform the requested action</string>
+
+    <string name="share">Share</string>
+    <string name="shareText">Here is my city of birth! I was born in </string>
+
+    <string name="resume">Information Summary</string>
+
+    <string name="datePicked">No date selected</string>
+    <string name="dial">Call</string>
+</resources>

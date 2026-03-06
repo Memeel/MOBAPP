@@ -1,0 +1,44 @@
+<resources>
+    <string name="app_name">MyFirstApplication</string>
+
+    <string name="label_nom">Nom : </string>
+    <string name="label_prenom">Prénom : </string>
+    <string name="label_date_naissance">Date de naissance : </string>
+    <string name="label_ville_naissance">Ville de naissance : </string>
+    <string name="label_phone">Numéro de téléphone : </string>
+    <string name="label_dep">Département de naissance</string>
+
+    <string name="hint_nom">Entrez votre nom</string>
+    <string name="hint_prenom">Entrez votre prénom</string>
+    <string name="hint_date_naissance">Entrez votre date de naissance</string>
+    <string name="hint_ville_naissance">Entrez votre lieu de naissance</string>
+    <string name="hint_phone">Entrez un numéro de téléphone</string>
+
+    <string name="btn_valider">Valider</string>
+    <string name="btn_abandon">Abandonner</string>
+
+    <string name="reset_action">Tout effacer</string>
+
+    <string name="department">Sélectionner un département</string>
+
+    <string name="error">Saisie incomplète</string>
+    <string name="error_phone">Le numéro de téléphone existe déjà</string>
+    <string name="error_department">Veuillez sélectionner un département valide</string>
+
+    <string name="delete_success">Numéro de téléphone supprimé avec succès !</string>
+    <string name="phone_added">Nombre de numéros de téléphone ajouté : </string>
+    <string name="close">Fermer</string>
+    <string name="delete">Supprimer</string>
+
+    <string name="wiki">Ouvrir Wikipédia</string>
+    <string name="errorVille">Aucune ville n\'est entrée</string>
+    <string name="errorAction">Il n\'existe pas de composant qui sait réaliser l\'action demandée</string>
+
+    <string name="share">Partager</string>
+    <string name="shareText">Voici ma ville de naissance ! Je suis né(e) à </string>
+
+    <string name="resume">Résumé des informations</string>
+
+    <string name="datePicked">Aucune date n\'a été choisie</string>
+    <string name="dial">Appeler</string>
+</resources>

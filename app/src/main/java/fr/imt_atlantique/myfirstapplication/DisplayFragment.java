@@ -3,44 +3,61 @@ package fr.imt_atlantique.myfirstapplication;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class DisplayActivity extends AppCompatActivity {
+public class DisplayFragment extends Fragment {
 
     private TextView textNom, textPrenom, textVille, textDate, textDepartement;
     private LinearLayout listContainer;
+    private User user;
 
+    public DisplayFragment() {
+        // Required empty public constructor
+    }
+
+    public static DisplayFragment newInstance(User user) {
+        DisplayFragment fragment = new DisplayFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("user", user);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            user = getArguments().getParcelable("user");
+        }
+    }
 
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_display);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.display), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_display, container, false);
+    }
 
-        textNom = findViewById(R.id.nom);
-        textPrenom = findViewById(R.id.prenom);
-        textVille = findViewById(R.id.ville);
-        textDate = findViewById(R.id.date);
-        textDepartement = findViewById(R.id.department);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        listContainer = findViewById(R.id.phone);
+        textNom = view.findViewById(R.id.nom);
+        textPrenom = view.findViewById(R.id.prenom);
+        textVille = view.findViewById(R.id.ville);
+        textDate = view.findViewById(R.id.date);
+        textDepartement = view.findViewById(R.id.department);
 
-        Intent intent = getIntent();
-        User user = intent.getParcelableExtra("user");
+        listContainer = view.findViewById(R.id.phone);
 
         if (user != null) {
             String nom = getString(R.string.label_nom) + " " + user.getNom();
@@ -64,15 +81,15 @@ public class DisplayActivity extends AppCompatActivity {
     }
 
     public void displayPhone(String phone) {
-        LinearLayout linearLayout = new LinearLayout(this);
+        LinearLayout linearLayout = new LinearLayout(requireContext());
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-        TextView newPhoneEntry = new TextView(this);
+        TextView newPhoneEntry = new TextView(requireContext());
         newPhoneEntry.setText(phone);
 
         String dialText = getString(R.string.dial);
 
-        Button dial = new Button(this);
+        Button dial = new Button(requireContext());
         dial.setText(dialText);
 
         dial.setOnClickListener(view -> {

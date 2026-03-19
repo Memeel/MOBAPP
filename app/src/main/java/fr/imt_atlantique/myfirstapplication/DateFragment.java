@@ -18,25 +18,22 @@ import android.widget.TextView;
 public class DateFragment extends Fragment {
 
     private TextView textDate;
-    private int year, month, day;
     private Button abandon, validate;
-
     private DateInterface activity;
+    private User user;
 
     public interface DateInterface {
-        void sendDate(String date);
+        void sendDate(User user);
     }
 
     public DateFragment() {
         // Required empty public constructor
     }
 
-    public static DateFragment newInstance(int year, int month, int day) {
+    public static DateFragment newInstance(User user) {
         DateFragment fragment = new DateFragment();
         Bundle args = new Bundle();
-        args.putInt("year", year);
-        args.putInt("month", month);
-        args.putInt("day", day);
+        args.putParcelable("user", user);
         fragment.setArguments(args);
         return fragment;
     }
@@ -54,9 +51,7 @@ public class DateFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            year = getArguments().getInt("year");
-            month = getArguments().getInt("month");
-            day = getArguments().getInt("day");
+            user = getArguments().getParcelable("user");
         }
     }
 
@@ -72,28 +67,25 @@ public class DateFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         abandon = view.findViewById(R.id.abandon);
-
         abandon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String date = day + "/" + (month + 1) + "/" + year;
-                activity.sendDate(date);
+                activity.sendDate(user);
             }
         });
 
         validate = view.findViewById(R.id.validate);
-
         validate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String date = textDate.getText().toString().trim();
-                activity.sendDate(date);
+                user.setDate(date);
+                activity.sendDate(user);
             }
         });
 
         textDate = view.findViewById(R.id.displayDate);
-        String dateString = day + "/" + (month + 1) + "/" + year;
-        textDate.setText(dateString);
+        textDate.setText(user.getDate());
 
         textDate.setOnClickListener(v -> showPicker());
     }
@@ -107,6 +99,11 @@ public class DateFragment extends Fragment {
                 textDate.setText(result);
             }
         };
+
+        String[] date = user.getDate().split("/");
+        int day = Integer.parseInt(date[0]);
+        int month = Integer.parseInt(date[1]) - 1;
+        int year = Integer.parseInt(date[2]);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), dateListener, year, month, day);
         datePickerDialog.show();

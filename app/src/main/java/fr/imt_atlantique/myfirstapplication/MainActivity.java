@@ -1,19 +1,12 @@
 package fr.imt_atlantique.myfirstapplication;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-
-import com.google.android.material.snackbar.Snackbar;
 
 
 public class MainActivity extends AppCompatActivity implements FormFragment.FormInterface, DateFragment.DateInterface {
@@ -46,17 +39,17 @@ public class MainActivity extends AppCompatActivity implements FormFragment.Form
     }
 
     @Override
-    public void onDate(int year, int month, int day) {
+    public void onDate(User user) {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main, DateFragment.newInstance(year, month, day))
+                .replace(R.id.main, DateFragment.newInstance(user))
                 .addToBackStack(null)
                 .commit();
     }
 
     @Override
-    public void sendDate(String date) {
+    public void sendDate(User user) {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main, FormFragment.newInstance(date))
+                .replace(R.id.main, FormFragment.newInstance(user))
                 .addToBackStack(null)
                 .commit();
     }

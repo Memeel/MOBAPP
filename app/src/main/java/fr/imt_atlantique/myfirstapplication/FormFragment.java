@@ -32,12 +32,9 @@ public class FormFragment extends Fragment {
     private Button button;
     private FormInterface activity;
 
-    private String date = "";
-
-
     public interface FormInterface {
         void onSend(User user);
-        void onDate(int year, int month, int day);
+        void onDate(User user);
     }
 
     public FormFragment() {
@@ -48,10 +45,10 @@ public class FormFragment extends Fragment {
         return new FormFragment();
     }
 
-    public static FormFragment newInstance(String date) {
+    public static FormFragment newInstance(User user) {
         FormFragment fragment = new FormFragment();
         Bundle args = new Bundle();
-        args.putString("date", date);
+        args.putParcelable("user", user);
         fragment.setArguments(args);
         return fragment;
     }
@@ -69,10 +66,7 @@ public class FormFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            String d = getArguments().getString("date");
-            if (d != null) {
-                date = d;
-            }
+            user = getArguments().getParcelable("user");
         }
     }
 
@@ -95,54 +89,38 @@ public class FormFragment extends Fragment {
         listContainer = view.findViewById(R.id.phone);
         spinner = view.findViewById(R.id.department);
 
-        if (date != null && !date.isEmpty()) {
-            textDate.setText(date);
+        Calendar c = Calendar.getInstance();
+        String today = c.get(Calendar.DAY_OF_MONTH) + "/" + (c.get(Calendar.MONTH) + 1) + "/" + c.get(Calendar.YEAR);
+        if (user != null) {
+            textNom.setText(user.getNom());
+            textPrenom.setText(user.getPrenom());
+            textVille.setText(user.getVille());
+            textDate.setText(user.getDate() == null ? today : user.getDate());
+
+            if (user.getDepartement() != null && spinner.getAdapter() != null) {
+                for (int i = 0; i < spinner.getAdapter().getCount(); i++) {
+                    if (spinner.getAdapter().getItem(i).equals(user.getDepartement())) {
+                        spinner.setSelection(i);
+                    }
+                }
+            }
+        } else {
+            textDate.setText(today);
         }
+
         button = view.findViewById(R.id.button);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String nom = textNom.getText().toString().trim();
-                String prenom = textPrenom.getText().toString().trim();
-                String ville = textVille.getText().toString().trim();
+                updateUser();
+
                 String phone = textPhone.getText().toString().trim();
-
-                date = textDate.getText().toString().trim();
-
-                String department = spinner.getSelectedItem().toString().trim();
-
-                String textToShow = getString(R.string.error);
+                String close = getString(R.string.close);
                 String defaultDept = getString(R.string.department);
 
-                if (!(nom.isEmpty() || prenom.isEmpty() || date.isEmpty() || ville.isEmpty() || department.equals(defaultDept))) {
-                    if (!phone.isEmpty()) {
-                        if (!phoneList.contains(phone)) {
-                            phoneList.add(phone);
-                            textToShow = nom + ", " + prenom + ", " + date + ", " + ville + ", " + department +
-                                    "\n" + getString(R.string.phone_added) + listContainer.getChildCount();
-
-                        } else {
-                            textToShow = getString(R.string.error_phone);
-                        }
-                        textPhone.setText("");
-                    } else {textToShow = "OK";}
-
-                    user = new User(nom, prenom, ville, date, department, phoneList.toArray(new String[0]));
-                }
-
-                else if (!(nom.isEmpty() || prenom.isEmpty() || date.isEmpty() || ville.isEmpty()) & department.equals(getString(R.string.department))) {
-                    textToShow = getString(R.string.error_department);
-                }
-
-                if (!(textToShow.equals(getString(R.string.error)) || textToShow.equals(getString(R.string.error_phone)) || textToShow.equals(getString(R.string.error_department)))) {
-                    if (activity != null) {
-                        activity.onSend(user);
-                    }
-                } else {
-                    String close = getString(R.string.close);
-
-                    Snackbar.make(view.findViewById(R.id.main), textToShow, Snackbar.LENGTH_LONG)
+                if (user.getNom().isEmpty() || user.getPrenom().isEmpty() || user.getDate().isEmpty() || user.getVille().isEmpty()) {
+                    Snackbar.make(view, getString(R.string.error), Snackbar.LENGTH_LONG)
                             .setAction(close, new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -150,6 +128,42 @@ public class FormFragment extends Fragment {
                                 }
                             })
                             .show();
+                    return;
+                }
+
+                if (user.getDepartement().equals(defaultDept)) {
+                    Snackbar.make(view, getString(R.string.error_department), Snackbar.LENGTH_LONG)
+                            .setAction(close, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    // Ferme le Snackbar
+                                }
+                            })
+                            .show();
+                    return;
+                }
+
+                if (!phone.isEmpty()) {
+                    if (!phoneList.contains(phone)) {
+                        phoneList.add(phone);
+                        addPhoneAction(phone);
+                        textPhone.setText("");
+                        updateUser();
+                    } else {
+                        Snackbar.make(view, getString(R.string.error_phone), Snackbar.LENGTH_LONG)
+                                .setAction(close, new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        // Ferme le Snackbar
+                                    }
+                                })
+                                .show();
+                        return;
+                    }
+                }
+
+                if (activity != null) {
+                    activity.onSend(user);
                 }
             }
         });
@@ -157,29 +171,60 @@ public class FormFragment extends Fragment {
         textDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                date = textDate.getText().toString().trim();
-                if (!date.isEmpty()) {
-                    String[] splitDate = date.split("/");
-                    if (splitDate.length == 3) {
-                        try {
-                            int day = Integer.parseInt(splitDate[0]);
-                            int month = Integer.parseInt(splitDate[1]);
-                            int year = Integer.parseInt(splitDate[2]);
-                            activity.onDate(year, month - 1, day);
-
-                            return;
-                        } catch (NumberFormatException e) {
-                            // ignore and use current date
-                        }
-                    }
+                updateUser();
+                if (activity != null) {
+                    activity.onDate(user);
                 }
-
-                Calendar c = Calendar.getInstance();
-                int year = c.get(Calendar.YEAR);
-                int month = c.get(Calendar.MONTH);
-                int day = c.get(Calendar.DAY_OF_MONTH);
-                activity.onDate(year, month, day);
             }
         });
+    }
+
+    public void updateUser() {
+        String nom = textNom.getText().toString().trim();
+        String prenom = textPrenom.getText().toString().trim();
+        String ville = textVille.getText().toString().trim();
+        String date = textDate.getText().toString().trim();
+        String department = spinner.getSelectedItem().toString().trim();
+        String[] phone = phoneList.toArray(new String[0]);
+
+        user = new User(nom, prenom, ville, date, department, phone);
+    }
+
+    public void addPhoneAction(String phone) {
+        Context context = requireContext();
+
+        LinearLayout row = new LinearLayout(context);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+
+        TextView newPhoneEntry = new TextView(context);
+        newPhoneEntry.setText(phone);
+
+        String del = getString(R.string.delete);
+
+        Button delete = new Button(context);
+        delete.setText(del);
+
+        delete.setOnClickListener(view -> {
+            listContainer.removeView(row);
+            phoneList.remove(phone);
+
+            String message = getString(R.string.delete_success);
+            String close = getString(R.string.close);
+
+            Snackbar.make(view.findViewById(R.id.main), message, Snackbar.LENGTH_LONG)
+                    .setAction(close, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Ferme le Snackbar
+                        }
+                    })
+                    .show();
+        });
+
+        row.addView(newPhoneEntry);
+        row.addView(delete);
+        listContainer.addView(row);
+
+        textPhone.setText("");
     }
 }

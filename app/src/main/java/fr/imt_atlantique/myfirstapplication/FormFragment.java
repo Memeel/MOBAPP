@@ -1,13 +1,17 @@
 package fr.imt_atlantique.myfirstapplication;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.appcompat.widget.Toolbar;
 
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -31,6 +35,7 @@ public class FormFragment extends Fragment {
     private Spinner spinner;
     private Button button;
     private FormInterface activity;
+    private Toolbar toolbar;
 
     public interface FormInterface {
         void onSend(User user);
@@ -80,6 +85,25 @@ public class FormFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        toolbar = view.findViewById(R.id.myToolbar);
+        toolbar.inflateMenu(R.menu.menu_form);
+
+        toolbar.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.resetAction) {
+                resetAction();
+                return true;
+            } else if (id == R.id.openWiki) {
+                openWiki(view);
+                return true;
+            } else if (id == R.id.share) {
+                share(view);
+                return true;
+            }
+            return false;
+        });
+
 
         textNom = view.findViewById(R.id.editTextText3);
         textPrenom = view.findViewById(R.id.editTextText4);
@@ -226,5 +250,91 @@ public class FormFragment extends Fragment {
         listContainer.addView(row);
 
         textPhone.setText("");
+    }
+
+    public void resetAction() {
+        textNom.setText("");
+        textPrenom.setText("");
+        textVille.setText("");
+        textPhone.setText("");
+
+        String today = Calendar.getInstance().get(Calendar.DAY_OF_MONTH) + "/" + (Calendar.getInstance().get(Calendar.MONTH) + 1) + "/" + Calendar.getInstance().get(Calendar.YEAR);
+        textDate.setText(today);
+
+        listContainer.removeAllViews();
+        phoneList.clear();
+
+        spinner.setSelection(0);
+    }
+
+    public void openWiki(View view) {
+        String ville = textVille.getText().toString().trim();
+        String close = getString(R.string.close);
+
+        if (!(ville.isEmpty())) {
+            String url =  "http://fr.wikipedia.org/?search=" + ville;
+            Uri uri = Uri.parse(url);
+
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+
+            try {
+                startActivity(intent);
+            } catch (Exception e) {
+                Snackbar.make(view, getString(R.string.errorAction), Snackbar.LENGTH_LONG)
+                        .setAction(close, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // Ferme le Snackbar
+                            }
+                        })
+                        .show();
+            }
+
+        } else {
+            Snackbar.make(view, getString(R.string.errorVille), Snackbar.LENGTH_LONG)
+                    .setAction(close, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Ferme le Snackbar
+                        }
+                    })
+                    .show();
+        }
+
+    }
+
+    public void share(View view) {
+        String ville = textVille.getText().toString().trim();
+
+        String close = getString(R.string.close);
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+
+        if (!(ville.isEmpty())) {
+            intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.shareText) + ville);
+            try {
+                startActivity(intent);
+            } catch (Exception e) {
+                Snackbar.make(view.findViewById(R.id.main), getString(R.string.errorAction), Snackbar.LENGTH_LONG)
+                        .setAction(close, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // Ferme le Snackbar
+                            }
+                        })
+                        .show();
+            }
+
+        } else {
+            Snackbar.make(view, getString(R.string.errorVille), Snackbar.LENGTH_LONG)
+                    .setAction(close, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Ferme le Snackbar
+                        }
+                    })
+                    .show();
+        }
+
     }
 }

@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -33,7 +32,7 @@ public class FormFragment extends Fragment {
     private Set<String> phoneList = new HashSet<>();
     private LinearLayout listContainer;
     private Spinner spinner;
-    private Button button;
+    private Button button, button_add;
     private FormInterface activity;
     private Toolbar toolbar;
 
@@ -128,12 +127,19 @@ public class FormFragment extends Fragment {
                     }
                 }
             }
+
+            if (user.getPhone() != null) {
+                for (String phone : user.getPhone()) {
+                    phoneList.add(phone);
+                    addPhoneAction(phone, view);
+                }
+            }
+
         } else {
             textDate.setText(today);
         }
 
         button = view.findViewById(R.id.button);
-
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -170,7 +176,7 @@ public class FormFragment extends Fragment {
                 if (!phone.isEmpty()) {
                     if (!phoneList.contains(phone)) {
                         phoneList.add(phone);
-                        addPhoneAction(phone);
+                        addPhoneAction(phone, view);
                         textPhone.setText("");
                         updateUser();
                     } else {
@@ -201,6 +207,40 @@ public class FormFragment extends Fragment {
                 }
             }
         });
+
+        button_add = view.findViewById(R.id.add);
+        button_add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String close = getString(R.string.close);
+                String phone = textPhone.getText().toString().trim();
+
+                if (!phone.isEmpty() && !phoneList.contains(phone)) {
+                    phoneList.add(phone);
+                    addPhoneAction(phone, view);
+                    textPhone.setText("");
+                    updateUser();
+                    Snackbar.make(view, getString(R.string.phone_added) + phoneList.size(), Snackbar.LENGTH_LONG)
+                            .setAction(close, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    // Ferme le Snackbar
+                                }
+                            })
+                            .show();
+                }  else {
+                    Snackbar.make(view, getString(R.string.error_phone), Snackbar.LENGTH_LONG)
+                            .setAction(close, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    // Ferme le Snackbar
+                                }
+                            })
+                            .show();
+                    return;
+                }
+            }
+        });
     }
 
     public void updateUser() {
@@ -214,7 +254,7 @@ public class FormFragment extends Fragment {
         user = new User(nom, prenom, ville, date, department, phone);
     }
 
-    public void addPhoneAction(String phone) {
+    public void addPhoneAction(String phone, View view) {
         Context context = requireContext();
 
         LinearLayout row = new LinearLayout(context);
@@ -228,14 +268,14 @@ public class FormFragment extends Fragment {
         Button delete = new Button(context);
         delete.setText(del);
 
-        delete.setOnClickListener(view -> {
+        delete.setOnClickListener(v -> {
             listContainer.removeView(row);
             phoneList.remove(phone);
 
             String message = getString(R.string.delete_success);
             String close = getString(R.string.close);
 
-            Snackbar.make(view.findViewById(R.id.main), message, Snackbar.LENGTH_LONG)
+            Snackbar.make(view, message, Snackbar.LENGTH_LONG)
                     .setAction(close, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

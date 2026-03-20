@@ -41,4 +41,6 @@
 
     <string name="datePicked">No date selected</string>
     <string name="dial">Call</string>
+
+    <string name="btn_add">Add</string>
 </resources>

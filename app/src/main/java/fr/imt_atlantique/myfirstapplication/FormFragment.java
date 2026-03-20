@@ -45,10 +45,6 @@ public class FormFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static FormFragment newInstance() {
-        return new FormFragment();
-    }
-
     public static FormFragment newInstance(User user) {
         FormFragment fragment = new FormFragment();
         Bundle args = new Bundle();
@@ -355,7 +351,7 @@ public class FormFragment extends Fragment {
             try {
                 startActivity(intent);
             } catch (Exception e) {
-                Snackbar.make(view.findViewById(R.id.main), getString(R.string.errorAction), Snackbar.LENGTH_LONG)
+                Snackbar.make(view, getString(R.string.errorAction), Snackbar.LENGTH_LONG)
                         .setAction(close, new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {

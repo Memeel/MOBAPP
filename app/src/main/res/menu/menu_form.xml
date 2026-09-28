@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/resetAction"
+        android:title="@string/reset_action"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/openWiki"
+        android:title="@string/wiki"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/share"
+        android:title="@string/share"
+        app:showAsAction="never" />
+</menu>

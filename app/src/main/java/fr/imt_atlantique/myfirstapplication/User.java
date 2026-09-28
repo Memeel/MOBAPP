@@ -35,6 +35,7 @@ public class User implements Parcelable {
     public String getDate() {return date;}
     public String getDepartement() {return departement;}
     public String[] getPhone() {return phone;}
+    public void setDate(String date) {this.date = date;}
 
     public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
         @Override
